@@ -1,10 +1,20 @@
 import { useState } from 'react'
-import ChipTabs from './components/ChipTabs'
+
 import { RouterProvider , Route, createRoutesFromElements, createBrowserRouter } from 'react-router-dom'
+import { HomePage } from './pages/HomePage'
+import MainLayout from './layouts/MainLayout'
 
 const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<ChipTabs />} />)
+  createRoutesFromElements(
+
+  <Route path="/" element={<MainLayout/>} >
+
+  <Route index element={<HomePage/>} />
+
+  </Route>
 )
+    
+);
 
 
 function App() {
