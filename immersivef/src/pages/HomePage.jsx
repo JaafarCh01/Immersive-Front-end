@@ -9,7 +9,6 @@ export const HomePage = () => {
         <Hero />
         <Cards />
         <Testimonials />
-        <Footer />
          </>
   )
 }
