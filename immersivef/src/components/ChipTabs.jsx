@@ -8,7 +8,8 @@ const ChipTabs = () => {
   const [selected, setSelected] = useState(tabs[0]);
 
   return (
-    <div className="px-4 py-14 bg-slate-900 flex items-center flex-wrap gap-2">
+    <div className="px-4 py-3 bg-slate-900 flex items-center flex-wrap gap-2">
+      <div  className="flex flex-grow justify-center gap-2 "style={{ marginLeft: '7rem' }}>
       {tabs.map((tab) => (
         <Chip
           text={tab}
@@ -17,8 +18,14 @@ const ChipTabs = () => {
           key={tab}
         />
       ))}
+      </div>
+      
+      <div className="ml-auto text-sm px-3 py-1">
       <SignB />
+      </div>
+      
     </div>
+    
   );
 };
 

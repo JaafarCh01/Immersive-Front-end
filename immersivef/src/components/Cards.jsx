@@ -9,10 +9,16 @@ import { FiMousePointer } from "react-icons/fi";
 
 const Cards = () => {
   return (
-    <div className="flex justify-around flex-wrap gap-4  w-full place-content-center bg-gradient-to-br bg-black rounded-[6px] px-4 py-12 text-slate-900">
-      <TiltCard />
-      <TiltCard />
-    <TiltCard />
+    <div className="flex justify-around flex-wrap gap-4  w-full place-content-center bg-gradient-to-br   px-4 py-12 text-slate-900" style={{ backgroundColor: '#0F172A' }}>
+      <TiltCard title="Immersive VR" 
+      text="Experience learning like never before with our cutting-edge VR technology."
+      logo="https://img.icons8.com/?size=100&id=AqXn4PdN9DMB&format=png&color=000000"/>
+      <TiltCard title="Interactive AR" 
+      text="Augmented reality brings educational content to life in your environment."
+      logo="https://img.icons8.com/?size=100&id=l2fg4tiIwlpA&format=png&color=000000"/>
+    <TiltCard title="Expert Instructors" 
+    text="Learn from industry experts and top educators around the world."
+    logo="https://img.icons8.com/?size=100&id=58861&format=png&color=000000"/>
     </div>
   );
 };
@@ -20,7 +26,7 @@ const Cards = () => {
 const ROTATION_RANGE = 32.5;
 const HALF_ROTATION_RANGE = 32.5 / 2;
 
-const TiltCard = () => {
+const TiltCard = (props) => {
   const ref = useRef(null);
 
   const x = useMotionValue(0);
@@ -63,7 +69,7 @@ const TiltCard = () => {
         transformStyle: "preserve-3d",
         transform,
       }}
-      className="relative h-96 w-72 rounded-xl bg-gradient-to-br from-indigo-300 to-violet-300"
+      className="relative h-80 w-80 rounded-xl bg-gradient-to-br from-indigo-300 to-violet-300"
     >
       <div
         style={{
@@ -72,20 +78,29 @@ const TiltCard = () => {
         }}
         className="absolute inset-4 grid place-content-center rounded-xl bg-white shadow-lg"
       >
-        <FiMousePointer
+        
+        <img src={props.logo}
+          alt={`${props.title} logo`}
           style={{
             transform: "translateZ(75px)",
           }}
-          className="mx-auto text-4xl"
-        />
-        <p
+          className="mx-auto w-20 h-20 mb-4" />
+        <div
           style={{
             transform: "translateZ(50px)",
           }}
-          className="text-center text-2xl font-bold"
+          className="text-center text-2xl font-bold pb-4"
         >
-          HOVER ME
-        </p>
+          {props.title}
+        </div>
+        <div
+          style={{
+            transform: "translateZ(50px)",
+          }}
+          className="text-center text-base text-gray-700"
+        >
+          {props.text}
+        </div>
       </div>
     </motion.div>
   );
