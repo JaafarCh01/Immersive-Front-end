@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { RouterProvider , Route, createRoutesFromElements, createBrowserRouter } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import MainLayout from './layouts/MainLayout'
+import { CoursesCatalogue } from './pages/CoursesCatalogue'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -10,6 +11,7 @@ const router = createBrowserRouter(
   <Route path="/" element={<MainLayout/>} >
 
   <Route index element={<HomePage/>} />
+  <Route path="Courses" element={<CoursesCatalogue/>} />
 
   </Route>
 )

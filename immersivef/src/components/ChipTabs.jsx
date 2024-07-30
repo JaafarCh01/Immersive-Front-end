@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import SignB from "./SignB";
+import { redirect } from "react-router-dom";
 
-const tabs = ["Home", "Search", "About", "FAQ"];
+const tabs = ["Home", "Search", "Courses","About", "FAQ"];
 
 const ChipTabs = () => {
   const [selected, setSelected] = useState(tabs[0]);
