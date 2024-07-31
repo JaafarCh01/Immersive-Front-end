@@ -3,7 +3,7 @@ import { useState } from "react";
 import SignB from "./SignB";
 import { useNavigate } from "react-router-dom";
 
-const tabs = ["Home", "Courses", "About", "FAQ"];
+const tabs = ["Home", "Courses", "About ", "Contact "]; 
 
 const ChipTabs = () => {
   const [selected, setSelected] = useState(tabs[0]);
