@@ -1,43 +1,49 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import SignB from "./SignB";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const tabs = ["Home", "Search", "Courses","About", "FAQ"];
+const tabs = ["Home", "Search", "Courses", "About", "FAQ"];
 
 const ChipTabs = () => {
   const [selected, setSelected] = useState(tabs[0]);
+  const navigate = useNavigate();
+
+  let handleNavigation = (tab) => {
+    setSelected(tab);
+    tab === "Home" ? navigate("/") :navigate(`/${tab.toLowerCase()}`);
+  };
+
+  
 
   return (
     <div className="px-4 py-3 bg-slate-900 flex items-center flex-wrap gap-2">
-      <div  className="flex flex-grow justify-center gap-2 "style={{ marginLeft: '7rem' }}>
-      {tabs.map((tab) => (
-        <Chip
-          text={tab}
-          selected={selected === tab}
-          setSelected={setSelected}
-          key={tab}
-        />
-      ))}
+      <div className="flex flex-grow justify-center gap-2" style={{ marginLeft: '7rem' }}>
+        {tabs.map((tab) => (
+          <Chip
+            text={tab}
+            selected={selected === tab}
+            handleNavigation={handleNavigation}
+            key={tab}
+          />
+        ))}
       </div>
-      
+
       <div className="ml-auto text-sm px-3 py-1">
-      <SignB />
+        <SignB />
       </div>
-      
     </div>
-    
   );
 };
 
 const Chip = ({
   text,
   selected,
-  setSelected,
+  handleNavigation,
 }) => {
   return (
     <button
-      onClick={() => setSelected(text)}
+      onClick={() => handleNavigation(text)}
       className={`${
         selected
           ? "text-white"
