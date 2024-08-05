@@ -1,10 +1,12 @@
-const ButtonT = (props) => {
+import { Link } from "react-router-dom";
+
+const ButtonT = ({text,link}) => {
   return (
-    <div className="flex items-center justify-center">
+    <Link to={link} className="flex items-center justify-center">
       <button className="px-6 py-2 font-medium bg-indigo-500 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">
-        {props.text}
+        {text}
       </button>
-    </div>
+    </Link>
   );
 };
 

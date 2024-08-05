@@ -6,6 +6,9 @@ import MainLayout from './layouts/MainLayout'
 import { CoursesCatalogue } from './pages/CoursesCatalogue'
 import { About } from './pages/About'
 import Contact from './pages/Contact'
+import UserSettings from './pages/UserSettings'
+import AdminDash from './pages/AdminDash'
+import CourseDetail from './pages/CourseDetail'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -16,6 +19,9 @@ const router = createBrowserRouter(
   <Route path="courses" element={<CoursesCatalogue/>} />
   <Route path="about" element={<About/>} />
   <Route path="contact" element={<Contact/>} />
+  <Route path="/Settings" element={<UserSettings/>} />
+  <Route path="/Admin" element={<AdminDash/>} />
+  <Route path="/courses/:id" element={<CourseDetail />} />
   </Route>
 )
     

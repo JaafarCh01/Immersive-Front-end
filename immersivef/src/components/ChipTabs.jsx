@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import SignB from "./SignB";
 import { useNavigate } from "react-router-dom";
+import UserDropdown from "./UserDrop";
 
 const tabs = ["Home", "Courses", "About ", "Contact "]; 
 
@@ -30,7 +31,7 @@ const ChipTabs = () => {
       </div>
 
       <div className="ml-auto text-sm px-3 py-1">
-        <SignB />
+        <UserDropdown />
       </div>
     </div>
   );

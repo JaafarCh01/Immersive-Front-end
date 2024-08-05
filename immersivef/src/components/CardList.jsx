@@ -29,7 +29,7 @@ function CardList({ cards }) {
                 <Typography>{card.description}</Typography>
               </div>
               <CardFooter className="pt-2">
-                <ButtonT text="Check it out" />
+              <ButtonT text="Check it out" link={`/courses/${card.id}`} />
               </CardFooter>
             </CardBody>
           </Card>
