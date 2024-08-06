@@ -1,21 +1,22 @@
-import { motion } from "framer-motion";
-import { useState } from "react";
-import SignB from "./SignB";
-import { useNavigate } from "react-router-dom";
-import UserDropdown from "./UserDrop";
+// src/components/ChipTabs.jsx
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import the AuthContext
+import UserDropdown from './UserDrop';
+import ButtonT from './ButtonT'; // Import the ButtonT component
 
-const tabs = ["Home", "Courses", "About ", "Contact "]; 
+const tabs = ["Home", "Courses", "About", "Contact"];
 
 const ChipTabs = () => {
+  const { isLoggedIn } = useAuth(); // Access authentication status correctly
   const [selected, setSelected] = useState(tabs[0]);
   const navigate = useNavigate();
 
-  let handleNavigation = (tab) => {
+  const handleNavigation = (tab) => {
     setSelected(tab);
-    tab === "Home" ? navigate("/") :navigate(`/${tab.toLowerCase()}`);
+    tab === "Home" ? navigate("/") : navigate(`/${tab.toLowerCase()}`);
   };
-
-  
 
   return (
     <div className="px-4 py-3 bg-slate-900 flex items-center flex-wrap gap-2">
@@ -31,17 +32,13 @@ const ChipTabs = () => {
       </div>
 
       <div className="ml-auto text-sm px-3 py-1">
-        <UserDropdown />
+        {isLoggedIn ? <UserDropdown /> : <ButtonT text="Sign In" link="/login" />}
       </div>
     </div>
   );
 };
 
-const Chip = ({
-  text,
-  selected,
-  handleNavigation,
-}) => {
+const Chip = ({ text, selected, handleNavigation }) => {
   return (
     <button
       onClick={() => handleNavigation(text)}
