@@ -8,12 +8,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in by verifying token from localStorage
     const checkLoginStatus = async () => {
       const token = localStorage.getItem('accessToken');
       if (token) {
         try {
-          const response = await fetch('/api/v1/auth/profile', {
+          const response = await fetch('http://localhost:3000/api/v1/auth/profile', {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -23,7 +22,7 @@ export const AuthProvider = ({ children }) => {
           if (response.ok) {
             const data = await response.json();
             setIsLoggedIn(true);
-            setUser(data); // Assuming the response has user data
+            setUser(data);
           } else {
             setIsLoggedIn(false);
             setUser(null);
@@ -44,27 +43,58 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/v1/auth/login', {
+      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);
         setIsLoggedIn(true);
         setUser(data.user);
+        return true;
       } else {
-        throw new Error('Login failed');
+        const errorData = await response.json();
+        console.error("Login Error:", errorData.message);
+        return false;
       }
     } catch (error) {
       console.log('Error logging in', error);
+      return false;
     }
   };
-
+  
+  const register = async (email, password) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.accessToken);
+        setIsLoggedIn(true);
+        setUser(data.user);
+        return true;
+      } else {
+        const errorData = await response.json();
+        console.error("Registration Error:", errorData.message);
+        return false;
+      }
+    } catch (error) {
+      console.log('Error registering', error);
+      return false;
+    }
+  };
+  
   const logout = () => {
     localStorage.removeItem('accessToken');
     setIsLoggedIn(false);
@@ -72,7 +102,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -11,11 +11,14 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+    setSuccess(''); // Clear previous success messages
     try {
-      const response = await login(email, password); // Call login function from context
-      if (response) {
+      const isSuccess = await login(email, password); 
+      if (isSuccess) {
         setSuccess('Logged in successfully!');
-        setError('');
+        // Redirect or perform other actions after successful login
+        // Example: navigate('/dashboard');
       } else {
         setError('Login failed');
       }

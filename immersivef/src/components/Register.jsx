@@ -7,6 +7,8 @@ function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+// Destructure the register function from context
+
   const { register } = useAuth(); // Destructure the register function from context
 
   const handleSubmit = async (e) => {
