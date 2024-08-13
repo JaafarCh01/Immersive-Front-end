@@ -38,7 +38,7 @@ const UserSettings = () => {
               {/* Profile Picture */}
               <div className="flex items-center">
                 <div className="flex">
-                  <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" className="rounded-full w-32 mr-10 mb-10" alt="Avatar" />
+                  <img src="https://as1.ftcdn.net/v2/jpg/07/40/57/66/1000_F_740576686_rjQP4gkbQRKrK4GCc5zhZZkc4ag3vflx.jpg" className="rounded-full w-32 mr-10 mb-10" alt="Avatar" />
                 </div>
                 <div className="flex flex-col justify-items-start">
                   <h1 className="text-gray-700">Add a profile picture</h1>

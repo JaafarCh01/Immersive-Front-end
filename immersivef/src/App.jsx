@@ -11,6 +11,9 @@ import AdminDash from './pages/AdminDash';
 import CourseDetail from './pages/CourseDetail';
 import Login from './components/Login';
 import Register from './components/Register';
+import AvatarCreator from './components/Avatar';
+
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +27,9 @@ const router = createBrowserRouter(
       <Route path="courses/:id" element={<CourseDetail />} />
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
+      <Route path="avatar" element={<AvatarCreator />} />
+      
+     
     </Route>
   )
 );
