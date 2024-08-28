@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSearch(searchTerm);
+  };
+
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="w-full max-w-lg">
-        <form className="mt-5 sm:flex sm:items-center">
+        <form onSubmit={handleSubmit} className="mt-5 sm:flex sm:items-center">
           <input
             id="q"
             name="q"
@@ -12,6 +19,8 @@ const SearchBar = () => {
             placeholder="What are you looking for?"
             type="search"
             autoFocus
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
             type="submit"
@@ -24,6 +33,5 @@ const SearchBar = () => {
     </div>
   );
 };
-
 
 export default SearchBar;

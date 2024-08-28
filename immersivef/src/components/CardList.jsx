@@ -26,10 +26,21 @@ function CardList({ cards }) {
                 <Typography variant="h5" color="blue-gray" className="mb-2">
                   {card.title}
                 </Typography>
-                <Typography>{card.description}</Typography>
+                <Typography className="mb-2">{card.description}</Typography>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                    {card.category}
+                  </span>
+                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                    {card.difficulty}
+                  </span>
+                  <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                    Rating: {card.rating}
+                  </span>
+                </div>
               </div>
               <CardFooter className="pt-2">
-              <ButtonT text="Check it out" link={`/courses/${card.id}`} />
+                <ButtonT text="Check it out" link={`/courses/${card.id}`} />
               </CardFooter>
             </CardBody>
           </Card>
