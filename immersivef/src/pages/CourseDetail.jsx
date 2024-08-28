@@ -1,81 +1,32 @@
 // src/pages/CourseDetail.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-// Sample data for course details
-const courseDetails = {
-  1: {
-    name: "PC Architecture",
-    description: "Explorez la conception et l'architecture des ordinateurs avec des visualisations AR.",
-    duration: "4 weeks",
-    instructor: "Dr. Alice Smith",
-    arUrl: "https://example.com/ar/pc-architecture",
-    vrUrl: "https://example.com/vr/pc-architecture",
-    enrollmentUrl: "https://example.com/enroll/pc-architecture",
-  },
-  2: {
-    name: "Car Engines",
-    description: "Apprenez le fonctionnement des moteurs de voitures avec des explications VR.",
-    duration: "6 weeks",
-    instructor: "Mr. John Doe",
-    arUrl: "https://example.com/ar/car-engines",
-    vrUrl: "https://example.com/vr/car-engines",
-    enrollmentUrl: "https://example.com/enroll/car-engines",
-  },
-  3: {
-    name: "Human Anatomy",
-    description: "Étudiez l'anatomie humaine en VR avec des modèles 3D détaillés.",
-    duration: "8 weeks",
-    instructor: "Dr. Emma Brown",
-    arUrl: "https://example.com/ar/human-anatomy",
-    vrUrl: "https://example.com/vr/human-anatomy",
-    enrollmentUrl: "https://example.com/enroll/human-anatomy",
-  },
-  4: {
-    name: "Building and Construction",
-    description: "Apprenez les fondamentaux de la construction avec des visualisations AR.",
-    duration: "5 weeks",
-    instructor: "Ms. Sarah Lee",
-    arUrl: "https://example.com/ar/building-construction",
-    vrUrl: "https://example.com/vr/building-construction",
-    enrollmentUrl: "https://example.com/enroll/building-construction",
-  },
-  5: {
-    name: "Exploring Solar Systems",
-    description: "Voyagez à travers l'espace et explorez notre système solaire en VR.",
-    duration: "7 weeks",
-    instructor: "Dr. Michael Green",
-    arUrl: "https://example.com/ar/solar-systems",
-    vrUrl: "https://example.com/vr/solar-systems",
-    enrollmentUrl: "https://example.com/enroll/solar-systems",
-  },
-  6: {
-    name: "Robotics Mechanics",
-    description: "Découvrez la mécanique des robots avec la réalité augmentée.",
-    duration: "6 weeks",
-    instructor: "Dr. Laura Wilson",
-    arUrl: "https://example.com/ar/robotics-mechanics",
-    vrUrl: "https://example.com/vr/robotics-mechanics",
-    enrollmentUrl: "https://example.com/enroll/robotics-mechanics",
-  },
-  7: {
-    name: "Physics",
-    description: "Réalisez des expériences de physique en VR et comprenez les principes fondamentaux.",
-    duration: "8 weeks",
-    instructor: "Dr. James White",
-    arUrl: "https://example.com/ar/physics",
-    vrUrl: "https://example.com/vr/physics",
-    enrollmentUrl: "https://example.com/enroll/physics",
-  },
-};
+import api from '../utils/api';
 
 const CourseDetail = () => {
   const { id } = useParams();
-  const course = courseDetails[id];
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!course) {
-    return <div>Course not found</div>;
-  }
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      try {
+        const response = await api.get(`/courses/${id}`);
+        setCourse(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch course details');
+        setLoading(false);
+      }
+    };
+
+    fetchCourseDetails();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!course) return <div>Course not found</div>;
 
   return (
     <div className="p-10 bg-gray-100 min-h-screen">

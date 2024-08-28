@@ -1,8 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGraduate, faChalkboardTeacher, faBook, faChartLine } from "@fortawesome/free-solid-svg-icons";
+import api from '../utils/api';
 
 const AdminDash = () => {
+  const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [stats, setStats] = useState({ totalStudents: 0, assignedCourses: 0, completedTests: 0 });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [studentsResponse, coursesResponse, statsResponse] = await Promise.all([
+          api.get('/admin/users'),
+          api.get('/admin/courses'),
+          api.get('/admin/stats')
+        ]);
+        
+        setStudents(studentsResponse.data);
+        setCourses(coursesResponse.data);
+        setStats(statsResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const assignCourse = async (userId, courseId) => {
+    try {
+      await api.post('/admin/assign-course', { userId, courseId });
+      // Refresh student data or update state
+    } catch (error) {
+      console.error('Error assigning course:', error);
+    }
+  };
+
   return (
     <div className="p-10 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Tableau de bord - Enseignant</h1>
@@ -13,21 +47,21 @@ const AdminDash = () => {
           <FontAwesomeIcon icon={faUserGraduate} className="text-4xl text-blue-500 mr-5" />
           <div>
             <p className="text-gray-500">Total des étudiants</p>
-            <h2 className="text-2xl font-bold">120</h2>
+            <h2 className="text-2xl font-bold">{stats.totalStudents}</h2>
           </div>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-5 flex items-center">
           <FontAwesomeIcon icon={faChalkboardTeacher} className="text-4xl text-green-500 mr-5" />
           <div>
             <p className="text-gray-500">Cours assignés</p>
-            <h2 className="text-2xl font-bold">45</h2>
+            <h2 className="text-2xl font-bold">{stats.assignedCourses}</h2>
           </div>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-5 flex items-center">
           <FontAwesomeIcon icon={faBook} className="text-4xl text-yellow-500 mr-5" />
           <div>
             <p className="text-gray-500">Tests effectués</p>
-            <h2 className="text-2xl font-bold">300</h2>
+            <h2 className="text-2xl font-bold">{stats.completedTests}</h2>
           </div>
         </div>
       </div>
@@ -46,19 +80,14 @@ const AdminDash = () => {
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
-        <tr>
-          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Jaafar</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Architecture des PC</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">75%</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">85%</td>
-        </tr>
-        <tr>
-          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Ali</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Moteurs de voitures</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50%</td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">70%</td>
-        </tr>
-        {/* Autres étudiants */}
+        {students.map(student => (
+          <tr key={student.id}>
+            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{student.name}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.currentCourse}</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.progress}%</td>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.lastTestResult}%</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   </div>
@@ -73,17 +102,17 @@ const AdminDash = () => {
             <div>
               <label className="block text-gray-700">Sélectionner un étudiant</label>
               <select className="w-full px-4 py-2 border rounded-lg">
-                <option value="sarah">Jaafar</option>
-                <option value="john">Ali</option>
-                {/* Autres étudiants */}
+                {students.map(student => (
+                  <option key={student.id} value={student.id}>{student.name}</option>
+                ))}
               </select>
             </div>
             <div>
               <label className="block text-gray-700">Sélectionner un cours</label>
               <select className="w-full px-4 py-2 border rounded-lg">
-                <option value="pc">Architecture des PC</option>
-                <option value="car">Moteurs de voitures</option>
-                {/* Autres cours */}
+                {courses.map(course => (
+                  <option key={course.id} value={course.id}>{course.name}</option>
+                ))}
               </select>
             </div>
           </div>

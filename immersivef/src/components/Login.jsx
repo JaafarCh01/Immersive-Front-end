@@ -11,16 +11,25 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
-    setSuccess(''); // Clear previous success messages
+    setError('');
+    setSuccess('');
     try {
-      const isSuccess = await login(email, password); 
-      if (isSuccess) {
+      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
         setSuccess('Logged in successfully!');
-        // Redirect or perform other actions after successful login
+        localStorage.setItem('token', data.accessToken);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        // Redirect to dashboard or home page
         // Example: navigate('/dashboard');
       } else {
-        setError('Login failed');
+        setError(data.message || 'Login failed');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -90,7 +99,7 @@ function Login() {
               {error && <p style={{ color: 'red' }}>{error}</p>}
               {success && <p style={{ color: 'green' }}>{success}</p>}
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet? <a href="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+                Don't have an account yet? <a href="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
               </p>
             </form>
           </div>
