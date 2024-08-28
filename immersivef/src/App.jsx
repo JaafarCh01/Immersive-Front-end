@@ -12,8 +12,7 @@ import CourseDetail from './pages/CourseDetail';
 import Login from './components/Login';
 import Register from './components/Register';
 import AvatarCreator from './components/Avatar';
-
-
+import Dashboard from './components/Dashboard';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,8 +27,7 @@ const router = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
       <Route path="avatar" element={<AvatarCreator />} />
-      
-     
+      <Route path="dashboard" element={<Dashboard />} />
     </Route>
   )
 );

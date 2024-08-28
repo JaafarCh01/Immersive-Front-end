@@ -1,91 +1,73 @@
 // src/components/Register.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';// Import the AuthContext
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-// Destructure the register function from context
-
-  const { register } = useAuth(); // Destructure the register function from context
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      const response = await register(email, password); // Call register function from context
-      if (response) {
-        setSuccess('User registered successfully!');
-        setError('');
+      const success = await register(email, password, role);
+      if (success) {
+        navigate('/dashboard');
       } else {
-        setError('Registration failed');
+        setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An error occurred during registration. Please try again.');
+      }
     }
   };
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-          <img className="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo" />
-          Flowbite
-        </a>
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Register a new account
-            </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-              <div className="mb-5">
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                  placeholder="name@flowbite.com" 
-                  required 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                />
-              </div>
-              <div className="mb-5">
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                  required 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                />
-              </div>
-              <div className="flex items-start mb-5">
-                <div className="flex items-center h-5">
-                  <input 
-                    id="remember" 
-                    type="checkbox" 
-                    value="" 
-                    className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" 
-                  />
-                </div>
-                <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember me</label>
-              </div>
-              <button 
-                type="submit" 
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Submit
-              </button>
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              {success && <p style={{ color: 'green' }}>{success}</p>}
-            </form>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
         </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <input type="hidden" name="remember" value="true" />
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email-address" className="sr-only">Email address</label>
+              <input id="email-address" name="email" type="email" autoComplete="email" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">Password</label>
+              <input id="password" name="password" type="password" autoComplete="new-password" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="role" className="sr-only">Role</label>
+              <select id="role" name="role" className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Register
+            </button>
+          </div>
+        </form>
+        {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Already have an account? <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">Sign in here</Link>
+        </p>
       </div>
-    </section>
+    </div>
   );
 }
 

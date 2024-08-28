@@ -1,5 +1,5 @@
-// src/contexts/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import api from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -8,95 +8,49 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        try {
-          const response = await fetch('http://localhost:3000/api/v1/auth/profile', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setIsLoggedIn(true);
-            setUser(data);
-          } else {
-            setIsLoggedIn(false);
-            setUser(null);
-          }
-        } catch (error) {
-          console.log('Error checking login status', error);
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.get('/api/v1/auth/profile')
+        .then(response => {
+          setIsLoggedIn(true);
+          setUser(response.data);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
           setIsLoggedIn(false);
           setUser(null);
-        }
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    };
-
-    checkLoginStatus();
+        });
+    }
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('accessToken', data.accessToken);
-        setIsLoggedIn(true);
-        setUser(data.user);
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error("Login Error:", errorData.message);
-        return false;
-      }
+      const response = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+      setUser(response.data.user);
+      return true;
     } catch (error) {
-      console.log('Error logging in', error);
+      console.error('Login error:', error);
       return false;
     }
   };
-  
-  const register = async (email, password) => {
+
+  const register = async (email, password, role) => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('accessToken', data.accessToken);
-        setIsLoggedIn(true);
-        setUser(data.user);
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error("Registration Error:", errorData.message);
-        return false;
-      }
+      const response = await api.post('/auth/register', { email, password, role });
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+      setUser(response.data.user);
+      return true;
     } catch (error) {
-      console.log('Error registering', error);
-      return false;
+      console.error('Registration error:', error.response?.data || error.message);
+      throw error.response?.data || error.message;
     }
   };
-  
+
   const logout = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     setIsLoggedIn(false);
     setUser(null);
   };
@@ -108,6 +62,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

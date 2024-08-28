@@ -1,35 +1,23 @@
-// src/components/Login.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Import the AuthContext
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const { login } = useAuth(); // Destructure the login function from context
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setSuccess('Logged in successfully!');
-        localStorage.setItem('token', data.accessToken);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        // Redirect to dashboard or home page
-        // Example: navigate('/dashboard');
+      const success = await login(email, password);
+      if (success) {
+        navigate('/dashboard');
       } else {
-        setError(data.message || 'Login failed');
+        setError('Invalid credentials');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -37,75 +25,36 @@ function Login() {
   };
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-          <img className="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo" />
-        </a>
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Sign in to your account
-            </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  id="email" 
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                  placeholder="name@company.com" 
-                  required 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                <input 
-                  type="password" 
-                  name="password" 
-                  id="password" 
-                  placeholder="••••••••" 
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                  required 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-start">
-                  <div className="flex items-center h-5">
-                    <input 
-                      id="remember" 
-                      aria-describedby="remember" 
-                      type="checkbox" 
-                      className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" 
-                    />
-                  </div>
-                  <div className="ml-3 text-sm">
-                    <label htmlFor="remember" className="text-gray-500 dark:text-gray-300">Remember me</label>
-                  </div>
-                </div>
-                <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
-              </div>
-              <button 
-                type="submit" 
-                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              >
-                Sign in
-              </button>
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-              {success && <p style={{ color: 'green' }}>{success}</p>}
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don't have an account yet? <a href="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
-              </p>
-            </form>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
         </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <input type="hidden" name="remember" value="true" />
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email-address" className="sr-only">Email address</label>
+              <input id="email-address" name="email" type="email" autoComplete="email" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">Password</label>
+              <input id="password" name="password" type="password" autoComplete="current-password" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+          </div>
+
+          <div>
+            <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Sign in
+            </button>
+          </div>
+        </form>
+        {error && <p className="mt-2 text-center text-sm text-red-600">{error}</p>}
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Don't have an account? <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">Register here</Link>
+        </p>
       </div>
-    </section>
+    </div>
   );
 }
 
