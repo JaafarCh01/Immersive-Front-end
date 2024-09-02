@@ -30,12 +30,7 @@ export const CoursesCatalogue = () => {
           page: currentPage
         });
         console.log('Fetched courses:', result);
-        if (Array.isArray(result)) {
-          console.log('Setting courses:', result);
-          setCourses(result);
-          setTotalPages(Math.ceil(result.length / 6)); // Assuming 6 courses per page
-        } else if (result && result.courses) {
-          console.log('Setting courses:', result.courses);
+        if (result && result.courses) {
           setCourses(result.courses);
           setTotalPages(result.totalPages || 1);
         } else {
@@ -43,12 +38,12 @@ export const CoursesCatalogue = () => {
           setCourses([]);
           setTotalPages(1);
         }
-        setLoading(false);
       } catch (err) {
-        console.error('Error fetching courses:', err);
-        setError('Failed to fetch courses: ' + err.message);
-        setLoading(false);
+        console.error('Error in loadCourses:', err);
+        setError(err.message);
         setCourses([]);
+      } finally {
+        setLoading(false);
       }
     };
 

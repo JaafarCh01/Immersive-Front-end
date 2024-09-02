@@ -17,7 +17,7 @@ function Register() {
     try {
       const success = await register(email, password, role);
       if (success) {
-        navigate('/dashboard');
+        navigate('/');
       } else {
         setError('Registration failed. Please try again.');
       }

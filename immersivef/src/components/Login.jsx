@@ -13,14 +13,22 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
-      const success = await login(email, password);
-      if (success) {
-        navigate('/dashboard');
+      const user = await login(email, password);
+      if (user) {
+        if (user.role === 'teacher') {
+          navigate('/teacherdash');
+        } else {
+          navigate('/');
+        }
       } else {
-        setError('Invalid credentials');
+        setError('Login failed. Please try again.');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An error occurred during login. Please try again.');
+      }
     }
   };
 
