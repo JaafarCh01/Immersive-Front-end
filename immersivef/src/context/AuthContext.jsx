@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
         .then(response => {
           setIsLoggedIn(true);
           setUser(response.data);
+          fetchUserAvatar();
         })
         .catch(() => {
           localStorage.removeItem('token');
@@ -32,6 +33,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);
+      fetchUserAvatar();
       return user;
     } catch (error) {
       console.error('Login error:', error);
@@ -58,8 +60,50 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const fetchUserAvatar = async () => {
+    if (user && user.id) {
+      try {
+        const response = await api.get(`/api/v1/users/${user.id}/avatar`);
+        setUser(prevUser => ({ ...prevUser, avatar: response.data.image_path }));
+      } catch (error) {
+        console.error('Error fetching user avatar:', error);
+      }
+    }
+  };
+
+  const updateProfile = async (userData) => {
+    try {
+      const response = await api.put('/api/v1/users/profile', userData);
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Profile update error:', error);
+      throw error;
+    }
+  };
+
+  const enrollInCourse = async (courseId) => {
+    try {
+      await api.post('/api/v1/student/enroll', { courseId });
+      // Optionally, you can update the user's enrolled courses here
+      // or fetch the updated user data
+    } catch (error) {
+      console.error('Course enrollment error:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      isLoggedIn, 
+      user, 
+      login, 
+      register, 
+      logout, 
+      updateProfile, 
+      enrollInCourse,
+      fetchUserAvatar 
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,22 +1,32 @@
-// src/pages/CourseDetail.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from '../utils/api';
+import { useAuth } from "../context/AuthContext";
+import { enrollInCourse } from '../services/courseService';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
+    console.log('Course ID:', id);
     const fetchCourseDetails = async () => {
       try {
         const response = await api.get(`/courses/${id}`);
+        console.log('API Response:', response.data);  // Log the entire course object
         setCourse(response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch course details');
+        console.error('Error fetching course details:', err);
+        if (err.response && err.response.status === 404) {
+          setError('Course not found. It may have been deleted or doesn\'t exist.');
+        } else {
+          setError(`Failed to fetch course details. Please try again later.`);
+        }
         setLoading(false);
       }
     };
@@ -24,53 +34,55 @@ const CourseDetail = () => {
     fetchCourseDetails();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-  if (!course) return <div>Course not found</div>;
+  useEffect(() => {
+    console.log('User:', user);
+  }, [user]);
+
+  const handleEnroll = async () => {
+    try {
+      const result = await enrollInCourse(id);
+      console.log('Enrollment result:', result);
+      setEnrollmentStatus('Enrolled successfully');
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      setEnrollmentStatus('Failed to enroll: ' + error.message);
+    }
+  };
+
+  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+  if (!course) return <div className="flex justify-center items-center h-screen">Course not found</div>;
 
   return (
     <div className="p-10 bg-gray-100 min-h-screen">
-      <div className="bg-white shadow-lg rounded-lg p-5">
-        <h1 className="text-2xl font-bold mb-4">{course.name}</h1>
-        <p className="mb-4">{course.description}</p>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">Détails du cours</h2>
-          <p><strong>Durée :</strong> {course.duration}</p>
-          <p><strong>Instructeur :</strong> {course.instructor}</p>
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">{course.title}</h1>
+        <img src={course.image || course.imageUrl || 'https://via.placeholder.com/800x400'} alt={course.title} className="w-full h-64 object-cover rounded-lg mb-6" />
+        <p className="text-lg mb-6">{course.description}</p>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Course Details</h2>
+            <p><strong>Duration:</strong> {course.duration} hours</p>
+            <p><strong>Difficulty:</strong> {course.difficulty}</p>
+            <p><strong>Category:</strong> {course.category}</p>
+            <p><strong>Rating:</strong> {course.rating}</p>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Instructor</h2>
+            <p>{course.instructor}</p>
+          </div>
         </div>
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Visualiser le contenu</h2>
-          {course.arUrl && (
-            <a
-              href={course.arUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
+        {user && user.role.toLowerCase() === 'student' && (
+          <div className="mt-6">
+            <button
+              onClick={handleEnroll}
+              className="px-6 py-3 font-medium bg-green-500 text-white rounded-lg transition-all hover:bg-green-600"
             >
-              Visualiser en AR
-            </a>
-          )}
-          {course.vrUrl && (
-            <a
-              href={course.vrUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-            >
-              Visualiser en VR
-            </a>
-          )}
-        </div>
-        <div className="mt-4">
-          <a
-            href={course.enrollmentUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-2 font-medium bg-green-500 text-white w-fit transition-all shadow-[3px_3px_0px_black] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
-          >
-            Enroll Now
-          </a>
-        </div>
+              Enroll Now
+            </button>
+            {enrollmentStatus && <p className="mt-2 text-green-600">{enrollmentStatus}</p>}
+          </div>
+        )}
       </div>
     </div>
   );

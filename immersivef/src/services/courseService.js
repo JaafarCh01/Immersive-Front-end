@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from '../utils/api';
 
 const API_URL = 'http://localhost:3000/api'; // Adjust this if your backend is running on a different port or URL
 
@@ -71,5 +72,22 @@ export const deleteCourse = async (courseId) => {
   });
   if (!response.ok) {
     throw new Error('Failed to delete course');
+  }
+};
+
+export const enrollInCourse = async (courseId) => {
+  try {
+    const response = await api.post('/student/enroll', { courseId });
+    return response.data;
+  } catch (error) {
+    console.error('Enrollment error:', error);
+    if (error.response) {
+      if (error.response.status === 403) {
+        throw new Error('Access denied. Please make sure you are logged in and have the correct permissions.');
+      }
+      throw new Error(error.response.data.message || 'Failed to enroll in the course');
+    } else {
+      throw new Error('Network error: Failed to enroll in the course');
+    }
   }
 };
