@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 const CourseForm = ({ course, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: course?.title || '',
@@ -11,6 +12,8 @@ const CourseForm = ({ course, onSubmit }) => {
     rating: course?.rating || ''
   });
 
+  const [uploading, setUploading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -19,9 +22,35 @@ const CourseForm = ({ course, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setUploading(true);
+    try {
+      const modelFilePath = await uploadFile();
+      const dataToSubmit = { ...formData, modelFile: modelFilePath };
+      await onSubmit(dataToSubmit);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setFormData(prevState => ({ ...prevState, modelFile: file }));
+  };
+
+  const uploadFile = async () => {
+    if (!formData.modelFile) return null;
+    
+    const fileName = `${Date.now()}_${formData.modelFile.name}`;
+    const { data, error } = await supabase.storage
+      .from('3d-models')
+      .upload(fileName, formData.modelFile);
+
+    if (error) throw error;
+    return data.path;
   };
 
   return (
@@ -114,6 +143,28 @@ const CourseForm = ({ course, onSubmit }) => {
           max="5"
           step="0.1"
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="modelFile" className="block text-gray-700 text-sm font-bold mb-2">3D Model File</label>
+        <input
+          type="file"
+          id="modelFile"
+          name="modelFile"
+          onChange={handleFileChange}
+          accept=".glb,.gltf"
+          className="w-full px-3 py-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="modelUrl" className="block text-gray-700 text-sm font-bold mb-2">3D Model URL</label>
+        <input
+          type="text"
+          name="modelUrl"
+          value={courseData.modelUrl || ''}
+          onChange={handleInputChange}
+          placeholder="3D Model URL"
+          className="w-full px-3 py-2 border rounded-md"
         />
       </div>
       <div className="flex items-center justify-center">
