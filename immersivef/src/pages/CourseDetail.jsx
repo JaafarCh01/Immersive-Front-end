@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import api from '../utils/api';
 import { useAuth } from "../context/AuthContext";
 import { enrollInCourse } from '../services/courseService';
-import ThreeDModel from '../components/ThreeDModel';
+import XRSetup from '../components/XRSetup';
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -61,14 +61,10 @@ const CourseDetail = () => {
         <img src={course.image || course.imageUrl || 'https://via.placeholder.com/800x400'} alt={course.title} className="w-full h-64 object-cover rounded-lg mb-6" />
         <p className="text-lg mb-6">{course.description}</p>
         
-        {/* Add 3D Model here */}
+        {/* Add XR Setup here */}
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">3D Model</h2>
-          {course.modelUrl ? (
-            <ThreeDModel modelUrl={course.modelUrl} />
-          ) : (
-            <p>No 3D model available for this course.</p>
-          )}
+          <h2 className="text-xl font-semibold mb-2">XR Experience</h2>
+          <XRSetup modelUrl={course.modelUrl} />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">

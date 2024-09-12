@@ -1,14 +1,25 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, TransformControls } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 function Model({ url }) {
   const gltf = useLoader(GLTFLoader, url)
-  return <primitive object={gltf.scene} scale={0.5} />
+  const [hovered, setHovered] = useState(false)
+  const [clicked, setClicked] = useState(false)
+
+  return (
+    <primitive 
+      object={gltf.scene} 
+      scale={clicked ? 0.75 : 0.5}
+      onClick={() => setClicked(!clicked)}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    />
+  )
 }
 
-export default function ThreeDModel({ modelUrl }) {
+export default function DesktopViewer({ modelUrl }) {
   return (
     <div style={{ width: '100%', height: '400px' }}>
       <Canvas camera={{ position: [0, 0, 5] }}>
